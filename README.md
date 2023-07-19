@@ -28,3 +28,16 @@
 |MoveToCoord_AutoDelay|x, y, z = 120, v = 100, a = 100, time = 0|传入目标坐标，速度，加速度，增减时间|距离|
 |Move_Circle|x, y, z = 120, n = 8, r = 100, d = 1400|飞圆心为传入坐标，以d的deplay为间隔的n个点的半径为r的圆|-|
 |Move_Circle_AutoDeplay|x, y, z = 120, n = 8, r = 100, v = 100, a = 100, time = 0|整合以上两个功能|-|
+
+
+### 库内部变量
+|变量名|属性|值|
+|---|---|---|
+|__STATEMENT|私有值|-|
+|__FATHER|私有值|-|
+|__WEB_XML|私有值-|
+|__XML|私有值|-|
+|__DRONE_NUM|私有值|-|
+|FILE|公共|输出文件名，字符串|
+|POS|公共|飞机当前坐标，列表|
+|DRONE|公共|无人机列表|
