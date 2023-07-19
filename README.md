@@ -25,9 +25,9 @@
 ### 新增功能
 |函数|参数|说明|返回值|
 |---|---|---|---|
-|MoveToCoord_AutoDelay|x, y, z = 120, v = 100, a = 100, time = 0|传入目标坐标，速度，加速度，增减时间|距离|
+|MoveToCoord_AutoDelay|x, y, z = 120, time = 0|传入目标坐标，增减时间|距离|
 |Move_Circle|x, y, z = 120, n = 8, r = 100, d = 1400|飞圆心为传入坐标，以d的deplay为间隔的n个点的半径为r的圆|-|
-|Move_Circle_AutoDeplay|x, y, z = 120, n = 8, r = 100, v = 100, a = 100, time = 0|整合以上两个功能|-|
+|Move_Circle_AutoDeplay|x, y, z = 120, n = 8, r = 100, time = 0|整合以上两个功能|-|
 
 
 ### 库内部变量
