@@ -2,6 +2,24 @@ import xml.etree.ElementTree as ET
 import xml.dom.minidom as minidom
 import math
 
+__STATEMENT = None
+__FATHER = None
+__WEBXML = None
+__XML = None
+__DRONE_NUM = 0
+__hSpeed = 0
+__hAcc = 0
+FILE = "output"
+POS = [0, 0, 0]
+DRONE = []
+TEST = False
+
+
+blue = "#33ccff"
+yellow = "#ffff00"
+orange = "#ff6600"
+grey = "#c0c0c0"
+
 root = ET.Element("FiiConfig", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
                                 "xmlns:xsd": "http://www.w3.org/2001/XMLSchema"})
 
@@ -26,10 +44,12 @@ Format.text = "mp3"
 
 Flights = ET.SubElement(root, "Flights")
 
-def start(d):
-    global FATHER, XML, WEBXML, DRONE
-    DRONE = d
-    i = DRONE_NUM
+def music(name):
+    Name.text = name
+
+def start():
+    global __FATHER, __XML, __WEBXML, DRONE, POS
+    i = __DRONE_NUM
     FlightView = ET.SubElement(Flights, "FlightView")
     Ip = ET.SubElement(FlightView, "Ip")
     Ip.text = "192.168.31.10{}".format(i+1)
@@ -38,17 +58,18 @@ def start(d):
     X.text = str(DRONE[i][0])
     Y = ET.SubElement(InitPos, "Y")
     Y.text = str(DRONE[i][1])
+    POS = [*DRONE[i], 0]
     Code = ET.SubElement(FlightView, "Code")
-    WEBXML = ET.SubElement(FlightView, "WebXml")
-    XML = ET.SubElement(WEBXML, "xml", {"xmlns":"https://developers.google.com/blockly/xml"})
-    block = ET.SubElement(XML, "block", {"type":"Goertek_Start", "x":"300", "y":"100"})
-    
-    FATHER = block
+    __WEBXML = ET.SubElement(FlightView, "WebXml")
+    __XML = ET.SubElement(__WEBXML, "xml", {"xmlns":"https://developers.google.com/blockly/xml"})
+    block = ET.SubElement(__XML, "block", {"type":"Goertek_Start", "x":"300", "y":"100"})
+    __FATHER = block
+Start = start
 
 def _next():
-    global FATHER
-    next = ET.SubElement(FATHER, "next")
-    FATHER = next
+    global __FATHER
+    next = ET.SubElement(__FATHER, "next")
+    __FATHER = next
 
 def _type(t):
     return {"type":"Goertek_"+t}
@@ -61,34 +82,35 @@ def _field(b, n, t):
     field.text = str(t)
 
 def _block(n):
-    global FATHER
-    if FATHER.tag != "next" and FATHER.tag != "statement":
+    global __FATHER
+    if __FATHER.tag != "next" and __FATHER.tag != "statement":
         _next()
-    b = ET.SubElement(FATHER, "block", _type(n))
-    FATHER = b
+    b = ET.SubElement(__FATHER, "block", _type(n))
+    __FATHER = b
     return b
 
 def StartTime(time = "00:00", color = "#cccccc"):
-    global FATHER, STATEMENT
+    global __FATHER, __STATEMENT
     b = _block("StartTime")
     _field(b, "time", time)
     _field(b, "color", color)
     statement = ET.SubElement(b, "statement", _name("functionIntit"))
-    STATEMENT = b
-    FATHER = statement
+    __STATEMENT = b
+    __FATHER = statement
 
 def End():
-    global FATHER
-    next = ET.SubElement(STATEMENT, "next")
-    FATHER = next
+    global __FATHER
+    next = ET.SubElement(__STATEMENT, "next")
+    __FATHER = next
 
 def UnLock():
     '''
     解锁
     '''
-    global FATHER
-    b = ET.SubElement(FATHER, "block", _type("UnLock"))
-    FATHER = b
+    global __FATHER
+    b = ET.SubElement(__FATHER, "block", _type("UnLock"))
+    __FATHER = b
+Arm = UnLock
 
 def Lock():
     _block("Lock")
@@ -99,21 +121,44 @@ def Delay(time = 1000):
     _field(b, "time", time)
 
 def Horizontal(hSpeed = 100, hAcc = 100):
+    '''
+    水平
+    '''
+    global __hAcc, __hSpeed
     b = _block("Horizontal")
     _field(b, "hSpeed", hSpeed)
     _field(b, "hAcc", hAcc)
+    __hSpeed = hSpeed
+    __hAcc = hAcc
 
 def Vertical(vSpeed = 100, vAcc = 100):
     b = _block("Vertical")
     _field(b, "vSpeed", vSpeed)
     _field(b, "vAcc", vAcc)
 
+def AngularVelocity(w):
+    b = _block("AngularVelocity")
+    _field(b, "w", w)
+
 def TakeOff(alt=120):
+    global POS
     b = _block("TakeOff")
     _field(b, "alt", alt)
+    POS[2] = alt
+Takeoff = TakeOff
 
 def Land():
     b = _block("Land")
+
+def RelativePosition(x, y, z):
+    global POS
+    b = _block("Move")
+    _field(b, "X", x)
+    _field(b, "Y", y)
+    _field(b, "Z", z)
+    POS[0] += x
+    POS[1] += y
+    POS[2] += z
 
 def MoveToCoord(x, y, z = 120):
     global POS
@@ -122,14 +167,16 @@ def MoveToCoord(x, y, z = 120):
     _field(b, "Y", y)
     _field(b, "Z", z)
     POS = [x, y, z]
+Move = MoveToCoord
 
-def MoveToCoord_AutoDelay(x, y, z = 120, v = 100, a = 100, time = 0):
+def MoveToCoord_AutoDelay(x, y, z = 120, time = 0):
     global POS
     b = _block("MoveToCoord")
     _field(b, "X", x)
     _field(b, "Y", y)
     _field(b, "Z", z)
-
+    v = __hSpeed
+    a = __hAcc
     d = math.sqrt((x - POS[0])**2 + (y - POS[1])**2 + (z - POS[2])**2)
     t = v / a
     D = (v**2) / (2 * a)
@@ -137,73 +184,116 @@ def MoveToCoord_AutoDelay(x, y, z = 120, v = 100, a = 100, time = 0):
         T = 2 * t + (d - 2 * D) / v
     else:
         T = 2 * math.sqrt(d / a)
-    
     T = round(T * 1000)
     d = round(d)
-
-    Delay(T + time)
+    T = T + time
+    Delay(T)
     POS = [x, y, z]
+    return T, d
 
-    return d
-
-def Move_Circle(x, y, z = 120, n = 8, r = 100, d = 1400):
-    angle = 2 * math.pi / n
+def Circle(n, r, dir = 1):
+    c = []
+    angle = dir * 2 * math.pi / n
     for i in range(n):
         theta = i * angle
-        dx = round(r * math.cos(theta))
-        dy = round(r * math.sin(theta))
+        p = []
+        p.append(round(r * math.cos(theta)))
+        p.append(round(r * math.sin(theta)))
+        c.append(p)
+    c.append([r, 0])
+    return c
+
+def Move_Circle(x, y, z = 120, n = 8, r = 100, d = 1400, dir = 1):
+    '''
+    dir: 1 or -1
+    '''
+    for [dx, dy] in Circle(n, r, dir):
         MoveToCoord(x + dx, y + dy, z)
         Delay(d)
-    MoveToCoord(x + round(r * math.cos(0)), y + round(r * math.sin(0)), z)
-    Delay(d)
 
-def Move_Circle_AutoDeplay(x, y, z = 120, n = 8, r = 100, v = 100, a = 100, time = 0):
-    angle = 2 * math.pi / n
-    for i in range(n):
-        theta = i * angle
-        dx = round(r * math.cos(theta))
-        dy = round(r * math.sin(theta))
-        MoveToCoord_AutoDelay(x + dx, y + dy, z, v, a, time)
-    MoveToCoord_AutoDelay(x + round(r * math.cos(0)), y + round(r * math.sin(0)), z, v, a, time)
+def Move_Circle_AutoDelay(x, y, z = 120, n = 8, r = 100, dir = 1, time = 0):
+    tot = 0
+    for [dx, dy] in Circle(n, r, dir):
+        tot += MoveToCoord_AutoDelay(x + dx, y + dy, z, time)[0]
+    return tot
 
 def LedAllOn(color="#ffffff"):
     b = _block("LedAllOn")
     _field(b, "color", color)
 
+def WaypointRGB(x, y, z, color):
+    MoveToCoord(x, y, z)
+    LedAllOn(color)
+
+def LedAllOff():
+    _block("LedAllOff")
+
 def LedBodyOn(color="#ffffff"):
     b = _block("LedBodyOn")
     _field(b, "color", color)
 
+def LedAllBreath(color, delay = 1000, dur = 1000, bright = 1):
+    b = _block("LedAllBreath")
+    _field(b, "dur", dur)
+    _field(b, "color", color)
+    _field(b, "bright", bright)
+    _field(b, "delay", delay)
+
+def LedBodyBreath(color, delay = 1000, dur = 1000, bright = 1):
+    b = _block("LedBodyBreath")
+    _field(b, "dur", dur)
+    _field(b, "color", color)
+    _field(b, "bright", bright)
+    _field(b, "delay", delay)
+
+def LedBodyBlink(color, dur, delay, bright):
+    b = _block("LedBodyBlink")
+    _field(b, "color", color)
+    _field(b, "birght", bright)
+    _field(b, "dur", dur)
+    _field(b, "delay", delay)
+
+def LedDroneArmHorse(color1, color2, color3, color4, clock, delay):
+    b = _block("LedDroneArmHorse")
+    _field(b, "color1", color1)
+    _field(b, "color2", color2)
+    _field(b, "color3", color3)
+    _field(b, "color4", color4)
+    _field(b, "clock", clock)
+    _field(b, "delay", delay)
+
+def LedDroneArmPulse(color1, color2, color3, color4, frequency):
+    b = _block("LedDroneArmPulse")
+    _field(b, "color1", color1)
+    _field(b, "color2", color2)
+    _field(b, "color3", color3)
+    _field(b, "color4", color4)
+    _field(b, "frequency", frequency)
+
 def finish():
-    global DRONE_NUM
-
-    str_xml = str(ET.tostring(XML, encoding='utf-8', method="xml"))
-    WEBXML.clear()
-    WEBXML.text = str_xml[2: (len(str_xml) - 1)]
-
-    DRONE_NUM += 1
+    global __DRONE_NUM
+    if not TEST:
+        str_xml = str(ET.tostring(__XML, encoding='utf-8', method="xml"))
+        __WEBXML.clear()
+        __WEBXML.text = str_xml[2: (len(str_xml) - 1)]
+    __DRONE_NUM += 1
 
 def save():
     rough_str = ET.tostring(root, encoding='utf-8', xml_declaration=True)
     reparsed = minidom.parseString(rough_str)
     new_str = reparsed.toprettyxml(indent='  ')
-    f = open('output.vlfii', 'w', encoding='utf-8')
+    f = open('{}.vlfii'.format(FILE), 'w', encoding='utf-8')
     f.write(new_str)
     f.close()
-
-
-STATEMENT = None
-FATHER = None
-WEBXML = None
-XML = None
-POS = [0, 0, 0]
-DRONE_NUM = 0
 
 if __name__ == "__main__":
     DRONE = [
         [160, 160],
+        [1, 1],
+        [2, 2],
+        [3, 3]
     ]
-    start(DRONE)
+    start()
     StartTime()
     UnLock()
     Delay()
