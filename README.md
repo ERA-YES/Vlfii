@@ -5,6 +5,7 @@
 **[博客链接](https://erayes.top/2023/07/18/vlfii/)**
 
 ### 使用注意
+建议将库文件与源代码文件放在同一目录下
 使用前设置无人机列表、文件名、音乐名等:
 ```python
 from vlfii import *
