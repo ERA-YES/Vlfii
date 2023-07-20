@@ -37,7 +37,6 @@
 |Arm|-|`Unlock`的别名，用于转换
 |Takeoff|-|`TakeOff`的别名，用于转换|-|
 |Move|-|`Move`的别名，用于转换|-|
-||-|``的别名，用于转换|-|
 |MoveToCoord_AutoDelay|x, y, z = 120, time = 0|传入目标坐标，增减时间|[时间, 距离]|
 |Move_Circle|x, y, z = 120, n = 8, r = 100, d = 1400|飞圆心为传入坐标，以d的deplay为间隔的n个点的半径为r的圆|-|
 |Move_Circle_AutoDeplay|x, y, z = 120, n = 8, r = 100, time = 0|整合以上两个功能|int tot 总时间|
