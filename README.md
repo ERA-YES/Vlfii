@@ -4,6 +4,30 @@
 ### 在博客里体验效果更佳哦
 **[博客链接](https://erayes.top/2023/07/18/vlfii/)**
 
+### 使用注意
+使用前设置无人机列表、文件名、音乐名等:
+```python
+from vlfii import *
+import vlfii
+
+vlfii.DRONE = [
+    [x1, y1],
+    [x2, y2],
+    [x3, y3],
+    [x4, y4],
+    [x5, y5],
+]
+vlfii.FILE = "output"
+vlfii.TEST = False
+
+music("好听的音乐")
+```
+所有代码写完后:
+```python
+save()
+```
+最后运行程序，在程序同一目录下就会生成"output.vlfii"
+
 ### 下表为图形化代码块与函数的对于关系
 |代码块|函数|参数|说明|返回值|
 |---|---|---|---|---|
