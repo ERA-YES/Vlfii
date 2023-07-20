@@ -42,7 +42,19 @@
 |Move_Circle|x, y, z = 120, n = 8, r = 100, d = 1400|飞圆心为传入坐标，以d的deplay为间隔的n个点的半径为r的圆|-|
 |Move_Circle_AutoDeplay|x, y, z = 120, n = 8, r = 100, time = 0|整合以上两个功能|int tot 总时间|
 |Circle|n, r, dir = 1|返回一个被n均分的圆|list c|
+|music|name|设定代码的音乐，接受文件名|-|
 
+### 转换器
+**VlfiiConverter**
+> 复制`小鸟飞飞图形化编程群控软件`右侧生成的文本源代码，运行`VlfiiConverter.py`，程序将会直接输出转换后的python程序，此程序在引用本Vlfii库是，可以直接运行并生成代码。
+- 在安装`pyperclip`库后程序将直接将转换后的代码粘贴入剪贴板
+
+命令行运行此程序以安装`pyperclip`库
+```
+pip install pyperclip
+```
+
+**!注意，生成的代码在`from Vlfii import *`时才有效**
 
 ### 库内部变量
 |变量名|属性|值|功能|
@@ -52,7 +64,13 @@
 |__WEB_XML|私有值|-|表示WebXml标签|
 |__XML|私有值|-|表示Xml标签|
 |__DRONE_NUM|私有值|-|当前代码框的无人机编号|
+|__hSpeed|私有值|-|记录当前无人机的水平速度|
+|__hAcc|私有值|-|记录当前无人机的水平加速度|
 |FILE|公共|字符串|输出文件名|
 |POS|公共|列表|飞机当前坐标|
 |DRONE|公共|列表|无人机列表|
 |TEST|公共|布尔值|调试模式开关，开启时生成文件不可用|
+|blue|公共|"#33ccff"|蓝色|
+|yellow|公共|"#ffff00"|黄色|
+|orange|公共|"#ff6600"|橙色|
+|grey|公共|"#c0c0c0"|灰色|
