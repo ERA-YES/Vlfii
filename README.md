@@ -7,27 +7,41 @@
 ### 下表为图形化代码块与函数的对于关系
 |代码块|函数|参数|说明|返回值|
 |---|---|---|---|---|
-|开始|start()|-|-|-|
-|Start at|StartTime()|time = "00:00", color = "#cccccc"|-|-|
-|结束Start at代码块|End()|-|-|-|
-|延时|Delay()|time = 1000|-|-|
-|解锁|Unlock()|-|-|-|
-|上锁|Lock()|-|-|-|
-|水平速度 水平加速度|Horizontal()|hSpeed = 100, hAcc = 100|-|-|
-|垂直速度 垂直加速度|Vertical()|vSpeed = 100, vAcc = 100|-|-|
-|起飞  cm|TakeOff()|alt = 120|-|-|
-|降落|Land()|-|-|-|
-|直线移至|MoveToCoord()|x, y, z = 120|-|-|
-|飞机灯光变为|LedAllOn()|color="#ffffff"|-|-|
-|机身灯光变为|LedBodyOn()|color="#ffffff"|-|-|
-|结束一架飞机并转向下一架|finish()|-|-|-|
+|开始|start|-|-|-|
+|Start at|StartTime|time = "00:00", color = "#cccccc"|-|-|
+|结束Start at代码块|End|-|-|-|
+|延时|Delay|time = 1000|-|-|
+|解锁|Unlock|-|-|-|
+|上锁|Lock|-|-|-|
+|水平速度 水平加速度|Horizontal|hSpeed = 100, hAcc = 100|-|-|
+|垂直速度 垂直加速度|Vertical|vSpeed = 100, vAcc = 100|-|-|
+|角速度|AngularVelocity|w|-|-|
+|起飞  cm|TakeOff|alt = 120|-|-|
+|降落|Land|-|-|-|
+|直线移至|MoveToCoord|x, y, z = 120|-|-|
+|X, Y, Z方向移动|RelativePosition|x, y, z|-|-|
+|飞机灯光变为|LedAllOn|color="#ffffff"|-|-|
+|飞机在delay毫秒内逐渐变为color，亮度为bright，然后dur毫秒内变暗|LedAllBreath|color, delay = 1000, dur = 1000, bright = 1|-|-|
+|机身在delay毫秒内逐渐变为color，亮度为bright，然后dur毫秒内变暗|LedBodyBreath|color, delay = 1000, dur = 1000, bright = 1|-|-|
+|机身灯光先变为color，亮度为bright，持续dur,再关闭delay|LedBodyBlink|color, dur, delay, bright|-|-|
+|机身灯光变为|LedBodyOn|color="#ffffff"|-|-|
+|直线移至，飞机灯光变为|WaypointRGB|x, y, z, color|-|-|
+|四个机臂灯光变为color1, color2, color3, color4, 然后灯光True/False时针方向旋转，转一圈时间为delay|LedDroneArmHorse|color1, color2, color3, color4, clock, delay|-|-|
+|四个击毙同亮脉冲color1, color2, color3, color4，频率frequency|LedDroneArmPulse|color1, color2, color3, color4, frequency|-|-|
+|结束一架飞机并转向下一架|finish|-|-|-|
 
 ### 新增功能
 |函数|参数|说明|返回值|
 |---|---|---|---|
-|MoveToCoord_AutoDelay|x, y, z = 120, time = 0|传入目标坐标，增减时间|距离|
+|Start|-|`start`的别名，用于转换|-|
+|Arm|-|`Unlock`的别名，用于转换
+|Takeoff|-|`TakeOff`的别名，用于转换|-|
+|Move|-|`Move`的别名，用于转换|-|
+||-|``的别名，用于转换|-|
+|MoveToCoord_AutoDelay|x, y, z = 120, time = 0|传入目标坐标，增减时间|[时间, 距离]|
 |Move_Circle|x, y, z = 120, n = 8, r = 100, d = 1400|飞圆心为传入坐标，以d的deplay为间隔的n个点的半径为r的圆|-|
-|Move_Circle_AutoDeplay|x, y, z = 120, n = 8, r = 100, time = 0|整合以上两个功能|-|
+|Move_Circle_AutoDeplay|x, y, z = 120, n = 8, r = 100, time = 0|整合以上两个功能|int tot 总时间|
+|Circle|n, r, dir = 1|返回一个被n均分的圆|list c|
 
 
 ### 库内部变量
