@@ -52,13 +52,14 @@ save()
 |直线移至|MoveToCoord|x, y, z = 120|-|-|
 |X, Y, Z方向移动|RelativePosition|x, y, z|-|-|
 |飞机灯光变为|LedAllOn|color="#ffffff"|-|-|
+|熄灭飞机灯光|LedAllOff|-|-|-|
 |飞机在delay毫秒内逐渐变为color，亮度为bright，然后dur毫秒内变暗|LedAllBreath|color, delay = 1000, dur = 1000, bright = 1|-|-|
 |机身在delay毫秒内逐渐变为color，亮度为bright，然后dur毫秒内变暗|LedBodyBreath|color, delay = 1000, dur = 1000, bright = 1|-|-|
 |机身灯光先变为color，亮度为bright，持续dur,再关闭delay|LedBodyBlink|color, dur, delay, bright|-|-|
 |机身灯光变为|LedBodyOn|color="#ffffff"|-|-|
 |直线移至，飞机灯光变为|WaypointRGB|x, y, z, color|-|-|
 |四个机臂灯光变为color1, color2, color3, color4, 然后灯光True/False时针方向旋转，转一圈时间为delay|LedDroneArmHorse|color1, color2, color3, color4, clock, delay|-|-|
-|四个击毙同亮脉冲color1, color2, color3, color4，频率frequency|LedDroneArmPulse|color1, color2, color3, color4, frequency|-|-|
+|四个机臂同亮脉冲color1, color2, color3, color4，频率frequency|LedDroneArmPulse|color1, color2, color3, color4, frequency|-|-|
 |结束一架飞机并转向下一架|finish|-|-|-|
 
 ### 新增功能
@@ -74,6 +75,9 @@ save()
 |Circle|n, r, dir = 1|返回一个被n均分的圆|list c|
 |Circle_FindPoint|A, B, n, dir = 1|返回圆心A点，经过B点的圆|list p|
 |music|name|设定代码的音乐，接受文件名|-|
+|Time|-|计算以返回当前时间|str "MM:SS"|
+
+**函数介绍较简单，更多请在代码里查看**
 
 ### 转换器
 **VlfiiConverter**
@@ -97,6 +101,7 @@ pip install pyperclip
 |__DRONE_NUM|私有值|-|当前代码框的无人机编号|
 |__hSpeed|私有值|-|记录当前无人机的水平速度|
 |__hAcc|私有值|-|记录当前无人机的水平加速度|
+|TIME|公共|整型|记录当前时间|
 |FILE|公共|字符串|输出文件名|
 |POS|公共|列表|飞机当前坐标|
 |DRONE|公共|列表|无人机列表|
