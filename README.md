@@ -12,8 +12,9 @@
 from vlfii import *
 import vlfii
 
+#默认ip从"192.168.31.101"递增，传入第三参数以调整
 vlfii.DRONE = [
-    [x1, y1],
+    [x1, y1, ["192.169.31.109"]],
     [x2, y2],
     [x3, y3],
     [x4, y4],
