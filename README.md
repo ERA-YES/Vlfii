@@ -69,9 +69,10 @@ save()
 |Takeoff|-|`TakeOff`的别名，用于转换|-|
 |Move|-|`Move`的别名，用于转换|-|
 |MoveToCoord_AutoDelay|x, y, z = 120, time = 0|传入目标坐标，增减时间|[时间, 距离]|
-|Move_Circle|x, y, z = 120, n = 8, r = 100, d = 1400|飞圆心为传入坐标，以d的deplay为间隔的n个点的半径为r的圆|-|
-|Move_Circle_AutoDeplay|x, y, z = 120, n = 8, r = 100, time = 0|整合以上两个功能|int tot 总时间|
+|Move_Circle|x, y, z = 120, n = 8, r = 100, time = 0|飞圆心为传入坐标的n个点的半径为r的圆|int tot 总时间|
+|Move_CircleFind|A, B, z = 120, n = 16, dir = 1, time = 0|直接从B点开始飞圆心为A点的圆|int tot 总时间|
 |Circle|n, r, dir = 1|返回一个被n均分的圆|list c|
+|Circle_FindPoint|A, B, n, dir = 1|返回圆心A点，经过B点的圆|list p|
 |music|name|设定代码的音乐，接受文件名|-|
 
 ### 转换器
