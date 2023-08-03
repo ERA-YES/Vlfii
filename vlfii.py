@@ -7,13 +7,12 @@ __FATHER = None
 __WEBXML = None
 __XML = None
 __DRONE_NUM = 0
-__hSpeed = 0
-__hAcc = 0
+__hSpeed = 100
+__hAcc = 200
 FILE = "output"
 POS = [0, 0, 0]
 DRONE = []
 TEST = False
-
 
 blue = "#33ccff"
 yellow = "#ffff00"
@@ -52,7 +51,10 @@ def start():
     i = __DRONE_NUM
     FlightView = ET.SubElement(Flights, "FlightView")
     Ip = ET.SubElement(FlightView, "Ip")
-    Ip.text = "192.168.31.10{}".format(i+1)
+    try:
+        Ip.text = DRONE[i][2]
+    except IndexError:
+        Ip.text = "192.168.31.10{}".format(i+1)
     InitPos = ET.SubElement(FlightView, "InitPos")
     X = ET.SubElement(InitPos, "X")
     X.text = str(DRONE[i][0])
@@ -114,6 +116,7 @@ Arm = UnLock
 
 def Lock():
     _block("Lock")
+Disarm = Lock
 
 def Delay(time = 1000):
     b = _block("Delay")
