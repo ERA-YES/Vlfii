@@ -2,7 +2,7 @@
 小鸟飞飞图形化编程的文本编程，针对于小鸟飞飞图形化编程群控软件，采用python构建，可直接引用为库运行，目前已实现大部分常用函数，正在更新中
 
 ### 在博客里体验效果更佳哦
-**[博客链接](https://erayes.top/2023/07/18/vlfii/)**
+**[博客链接](https://blog.erayes.top/2023/07/18/vlfii/)**
 
 ### 使用注意
 建议将库文件与源代码文件放在同一目录下
@@ -69,7 +69,7 @@ save()
 |Arm|-|`Unlock`的别名，用于转换
 |Takeoff|-|`TakeOff`的别名，用于转换|-|
 |Move|-|`Move`的别名，用于转换|-|
-|MoveToCoord_AutoDelay|x, y, z = 120, time = 0|传入目标坐标，增减时间|[时间, 距离]|
+|MoveToCoord_AutoDelay|x, y, z = 120, time = 0|传入目标坐标，增减时间, 或传入百分比"xx%"|int 时间|
 |Move_Circle|x, y, z = 120, n = 8, r = 100, time = 0|飞圆心为传入坐标的n个点的半径为r的圆|int tot 总时间|
 |Move_CircleFind|A, B, z = 120, n = 16, dir = 1, time = 0|直接从B点开始飞圆心为A点的圆|int tot 总时间|
 |Circle|n, r, dir = 1|返回一个被n均分的圆|list c|
