@@ -1,27 +1,31 @@
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as minidom
 import math
-from datetime import timedelta
-from datetime import datetime
 
 #region all
 __STATEMENT = None
 __FATHER = None
 __WEBXML = None
 __XML = None
-__DRONE_NUM = 0
 __hSpeed = 100
 __hAcc = 200
+DRONE_NUM = 0
 TIME = 0
 FILE = "output"
 POS = [0, 0, 0]
 DRONE = []
+IP = []
 TEST = False
 
 blue = "#33ccff"
 yellow = "#ffff00"
 orange = "#ff6600"
 grey = "#c0c0c0"
+red = "#ff0000"
+white_red = "#ffcccc"
+green = "#33cc00"
+white_yellow = "#ffffcc"
+white = "#ffffff"
 
 #region Setups
 
@@ -51,46 +55,6 @@ Flights = ET.SubElement(root, "Flights")
 
 #endregion
 
-def music(name):
-    """设置音乐
-
-    Args:
-        name (str): 音乐文件名
-    """
-    Name.text = name
-
-def start():
-    """开始一架飞机
-    """
-    global __FATHER, __XML, __WEBXML, DRONE, POS
-    i = __DRONE_NUM
-    FlightView = ET.SubElement(Flights, "FlightView")
-    Ip = ET.SubElement(FlightView, "Ip")
-    try:
-        Ip.text = DRONE[i][2]
-    except IndexError:
-        Ip.text = "192.168.31.10{}".format(i+1)
-    InitPos = ET.SubElement(FlightView, "InitPos")
-    X = ET.SubElement(InitPos, "X")
-    X.text = str(DRONE[i][0])
-    Y = ET.SubElement(InitPos, "Y")
-    Y.text = str(DRONE[i][1])
-    POS = [*DRONE[i], 0]
-    Code = ET.SubElement(FlightView, "Code")
-    __WEBXML = ET.SubElement(FlightView, "WebXml")
-    __XML = ET.SubElement(__WEBXML, "xml", {"xmlns":"https://developers.google.com/blockly/xml"})
-    block = ET.SubElement(__XML, "block", {"type":"Goertek_Start", "x":"300", "y":"100"})
-    __FATHER = block
-
-def Time():
-    """转换时间
-
-    Returns:
-        str: "MM:SS"时间格式
-    """
-    s = math.ceil(TIME / 1000)
-    return f"{datetime(1900, 1, 1, 0, 0, 0) + timedelta(seconds=s) % timedelta(minutes=60):%M:%S}"
-
 def _next():
     global __FATHER
     next = ET.SubElement(__FATHER, "next")
@@ -114,45 +78,108 @@ def _block(n):
     __FATHER = b
     return b
 
-def StartTime(time = "auto", color = "#cccccc"):
-    """开始"StartTime"代码块
+def Vprint(s):
+    print("\033[31m" + IP[DRONE_NUM] + " saying: \033[32m" + s + "\033[37m")
 
-    Args:
-        time (str, optional): 时间. Defaults to "auto".
-        color (str, optional): 颜色. Defaults to "#cccccc".
+def music(name):
+    """====================\n
+    设置音乐
+
+    ====================\n
+    参数:
+        name (str): 音乐文件名\n
     """
-    global __FATHER, __STATEMENT
+    Name.text = name
+
+def start():
+    """====================\n
+    开始一架飞机
+    """
+    global __FATHER, __XML, __WEBXML, DRONE, POS, IP
+    i = DRONE_NUM
+    FlightView = ET.SubElement(Flights, "FlightView")
+    Ip = ET.SubElement(FlightView, "Ip")
+    try:
+        Ip.text = DRONE[i][2]
+        IP.append(DRONE[i][2])
+    except IndexError:
+        Ip.text = "192.168.31.10{}".format(i+1)
+        IP.append("192.168.31.10{}".format(i+1))
+    InitPos = ET.SubElement(FlightView, "InitPos")
+    X = ET.SubElement(InitPos, "X")
+    X.text = str(DRONE[i][0])
+    Y = ET.SubElement(InitPos, "Y")
+    Y.text = str(DRONE[i][1])
+    POS = [*DRONE[i], 0]
+    Code = ET.SubElement(FlightView, "Code")
+    __WEBXML = ET.SubElement(FlightView, "WebXml")
+    __XML = ET.SubElement(__WEBXML, "xml", {"xmlns":"https://developers.google.com/blockly/xml"})
+    block = ET.SubElement(__XML, "block", {"type":"Goertek_Start", "x":"300", "y":"100"})
+    __FATHER = block
+    Vprint("Started!")
+
+def Time(output = False):
+    """====================\n
+    转换时间
+
+    Returns:
+        str: "MM:SS"时间格式
+    """
+    s = f"{TIME // 60000 :02d}:{math.ceil(TIME / 1000) % 60 :02d}"
+    Vprint("Now Time: " + s) if output else None
+    return s
+
+def StartTime(time = "auto", color = "#cccccc"):
+    """====================\n
+    开始'StartTime'代码块
+
+    ====================\n
+    参数:
+        time (str, 可选): 时间。默认值为： "auto".\n
+        color (str, 可选): 颜色。默认值为： "#cccccc".\n
+    """
+    global __FATHER, __STATEMENT, TIME
     b = _block("StartTime")
-    _field(b, "time", Time() if time == "auto" else time)
+    if time == "auto":
+        _field(b, "time", Time())
+    else:
+        _field(b, "time", time)
+        minutes, seconds = time.split(':')
+        TIME = (int(minutes) * 60 + int(seconds)) * 1000
     _field(b, "color", color)
     statement = ET.SubElement(b, "statement", _name("functionIntit"))
     __STATEMENT = b
     __FATHER = statement
 
 def End():
-    """结束"StartTime"代码块
+    """====================\n
+    结束"StartTime"代码块
     """
     global __FATHER
     next = ET.SubElement(__STATEMENT, "next")
     __FATHER = next
 
 def UnLock():
-    """解锁
+    """====================\n
+    解锁
     """
     global __FATHER
     b = ET.SubElement(__FATHER, "block", _type("UnLock"))
     __FATHER = b
 
 def Lock():
-    """上锁
+    """====================\n
+    上锁
     """
     _block("Lock")
 
 def Delay(time = 1000):
-    """延时
+    """====================\n
+    延时
 
-    Args:
-        time (int, optional): 时间. Defaults to 1000.
+    ====================\n
+    参数:
+        time (int, 可选): 时间。默认值为： 1000.\n
     """
     global TIME
     b = _block("Delay")
@@ -161,11 +188,13 @@ def Delay(time = 1000):
     TIME += time
 
 def Horizontal(hSpeed = 100, hAcc = 100):
-    """水平速度和加速度
+    """====================\n
+    水平速度和加速度
 
-    Args:
-        hSpeed (int, optional): 水平速度. Defaults to 100.
-        hAcc (int, optional): 水平加速度. Defaults to 100.
+    ====================\n
+    参数:
+        hSpeed (int, 可选): 水平速度。默认值为： 100.\n
+        hAcc (int, 可选): 水平加速度。默认值为： 100.\n
     """
     global __hAcc, __hSpeed
     b = _block("Horizontal")
@@ -175,30 +204,36 @@ def Horizontal(hSpeed = 100, hAcc = 100):
     __hAcc = hAcc
 
 def Vertical(vSpeed = 100, vAcc = 100):
-    """垂直速度和加速度
+    """====================\n
+    垂直速度和加速度
 
-    Args:
-        vSpeed (int, optional): 垂直速度. Defaults to 100.
-        vAcc (int, optional): 垂直加速度. Defaults to 100.
+    ====================\n
+    参数:
+        vSpeed (int, 可选): 垂直速度。默认值为： 100.\n
+        vAcc (int, 可选): 垂直加速度。默认值为： 100.\n
     """
     b = _block("Vertical")
     _field(b, "vSpeed", vSpeed)
     _field(b, "vAcc", vAcc)
 
 def AngularVelocity(w):
-    """角速度
+    """====================\n
+    角速度
 
-    Args:
-        w (int): °/s
+    ====================\n
+    参数:
+        w (int): °/s\n
     """ 
     b = _block("AngularVelocity")
     _field(b, "w", w)
 
 def TakeOff(alt=120):
-    """起飞
+    """====================\n
+    起飞
 
-    Args:
-        alt (int, optional): 高度. Defaults to 120.
+    ====================\n
+    参数:
+        alt (int, 可选): 高度。默认值为： 120.\n
     """
     global POS
     b = _block("TakeOff")
@@ -206,17 +241,20 @@ def TakeOff(alt=120):
     POS[2] = alt
 
 def Land():
-    """降落
+    """====================\n
+    降落
     """
     b = _block("Land")
 
 def RelativePosition(x, y, z):
-    """相对位置移动
+    """====================\n
+    相对位置移动
 
-    Args:
-        x (int): x轴移动距离
-        y (int): y轴移动距离
-        z (int): z轴移动距离
+    ====================\n
+    参数:
+        x (int): \n
+        y (int): y轴移动距离\n
+        z (int): z轴移动距离\n
     """
     global POS
     b = _block("Move")
@@ -228,12 +266,14 @@ def RelativePosition(x, y, z):
     POS[2] += z
 
 def MoveToCoord(x, y, z = 120):
-    """直线移至
+    """====================\n
+    直线移至
 
-    Args:
-        x (int): 目标位置x
-        y (int): 目标位置y
-        z (int, optional): 目标位置z. Defaults to 120.
+    ====================\n
+    参数:
+        x (int): 目标位置x\n
+        y (int): 目标位置y\n
+        z (int, 可选): 目标位置z。默认值为： 120.\n
     """
     global POS
     b = _block("MoveToCoord")
@@ -243,165 +283,165 @@ def MoveToCoord(x, y, z = 120):
     POS = [x, y, z]
 
 def MoveToCoord_AutoDelay(x, y, z = 120, time = 0):
-    """直线移至并自动延时
+    """====================\n
+    直线移至并自动延时
 
-    Args:
-        x (int): 目标位置x
-        y (int): 目标位置y
-        z (int, optional): 目标位置z. Defaults to 120.
-        time (int, optional): 增减延时. Defaults to 0.
+    ====================\n
+    参数:
+        x (int): 目标位置x\n
+        y (int): 目标位置y\n
+        z (int, 可选): 目标位置z。默认值为： 120.\n
+        time (int/str, 可选): 增减延时。默认值为： 0.\n
 
     Returns:
-        int, int: 总延时, 移动距离
+        int, float: 总延时, 移动距离
     """
-    global POS, TIME
+    global POS
     b = _block("MoveToCoord")
     _field(b, "X", x)
     _field(b, "Y", y)
     _field(b, "Z", z)
-    v = __hSpeed
-    a = __hAcc
+    v, a = __hSpeed, __hAcc
     d = math.sqrt((x - POS[0])**2 + (y - POS[1])**2 + (z - POS[2])**2)
-    t = v / a
-    D = (v**2) / (2 * a)
-    if d > 2 * D:
-        T = 2 * t + (d - 2 * D) / v
-    else:
-        T = 2 * math.sqrt(d / a)
-    T = round(T * 1000) + time
+    D = (v**2) / a
+    T = 2 * v / a + (d - D) / v if d > D else 2 * math.sqrt(d / a)
+    try:
+        time = int(time[:-1])/100
+        T = int(T * 1000 * time)
+    except TypeError:
+        T = int(T * 1000 + time)
     Delay(T)
-    TIME += T
     POS = [x, y, z]
     return T, d
 
 def Circle(n, r, dir = 1):
-    """生成圆
+    """====================\n
+    生成圆
 
-    Args:
-        n (int): 平分成n份
-        r (int): 半径
-        dir (int, optional): 方向(1/-1). Defaults to 1.
+    ====================\n
+    参数:
+        n (int): 平分成n份\n
+        r (int): 半径\n
+        dir (int, 可选): 方向(1/-1)。默认值为： 1.\n
 
     Returns:
         list: 圆列表
     """
-    c = []
-    angle = dir * 2 * math.pi / n
-    for i in range(n):
-        theta = i * angle
-        c.append([round(r * math.cos(theta)), 
-                  round(r * math.sin(theta))])
-    c.append([round(r), 0])
-    return c
+    return [[round(r * math.cos(i * (dir * 2 * math.pi / n))), round(r * math.sin(i * (dir * 2 * math.pi / n)))] for i in range(1, n)] + [[round(r), 0]]
 
 def Circle_FindPoint(A, B, n, dir = 1):
-    """找到圆
+    """====================\n
+    找到圆
 
-    Args:
-        A (list): 圆心坐标[x, y]
-        B (list): 寻找点坐标[x, y]
-        n (int): 平分成n份
-        dir (int, optional): 方向(1/-1). Defaults to 1.
+    ====================\n
+    参数:
+        A (list): 圆心坐标[x, y]\n
+        B (list): 寻找点坐标[x, y]\n
+        n (int/str): 平分成n份\n
+        dir (int, 可选): 方向(1/-1)。默认值为： 1.\n
     """
     def distance(A, B):
         return math.sqrt((A[0] - B[0]) ** 2 + (A[1] - B[1]) ** 2)
-    r = math.sqrt((A[0] - B[0]) ** 2 + (A[1] - B[1]) ** 2)
-    c = [[i[0] + A[0], i[1] + A[1]] for i in Circle(n, r, dir)]
-    # c = Circle(n, r, dir)
-    j = [i for i in c if distance(i ,B) == min(distance(i, B) for i in c)][0]
-    p = []
-    for i in range(len(c)):
-        if c[i] == j:
-            p = c[i + 1:] + c[:i + 1]
-            return p
+    try: n = n.split('/')
+    except AttributeError: n = [n, n]
+    c = [[i[0] + A[0], i[1] + A[1]] for i in Circle(int(n[1]), distance(A, B), dir)]
+    return [c[i + 1:] + c[:i + 1] for i in range(int(n[1])) if c[i] == [i for i in c if distance(i ,B) == min(distance(i, B) for i in c)][0]][0][:int(n[0])]
 
 def Move_Circle(x, y, z = 120, n = 8, r = 100, dir = 1, time = 0):
-    """移动一个圆
+    """====================\n
+    移动一个圆
 
-    Args:
-        x (int): 圆心位置x
-        y (int): 圆心位置y
-        z (int, optional): 圆心位置z. Defaults to 120.
-        n (int, optional): 平分成n份. Defaults to 8.
-        r (int, optional): 半径. Defaults to 100.
-        dir (int, optional): 方向(1/-1). Defaults to 1.
-        time (int, optional): 增减延时. Defaults to 0.
+    ====================\n
+    参数:
+        x (int): 圆心位置x\n
+        y (int): 圆心位置y\n
+        z (int, 可选): 圆心位置z。默认值为： 120.\n
+        n (int, 可选): 平分成n份。默认值为： 8.\n
+        r (int, 可选): 半径。默认值为： 100.\n
+        dir (int, 可选): 方向(1/-1)。默认值为： 1.\n
+        time (int, 可选): 增减延时。默认值为： 0.\n
 
     Returns:
         int: 总延时
     """
-    global TIME
     tot = 0
     for [dx, dy] in Circle(n, r, dir):
         tot += MoveToCoord_AutoDelay(x + dx, y + dy, z, time)[0]
-    TIME += tot
     return tot
 
 def Move_CircleFind(A, B, z = 120, n = 16, dir = 1, time = 0):
-    """找到圆并移动
+    """====================\n
+    找到圆并移动
 
-    Args:
-        A (list): 圆心坐标[x, y]
-        B (list): 寻找点坐标[x, y]
-        z (int, optional): 高度. Defaults to 120.
-        n (int, optional): 平分成n份. Defaults to 16.
-        dir (int, optional): 方向(1/-1). Defaults to 1.
-        time (int, optional): 增减延时. Defaults to 0.
+    ====================\n
+    参数:
+        A (list): 圆心坐标[x, y]\n
+        B (list): 寻找点坐标[x, y]\n
+        z (int, 可选): 高度。默认值为： 120.\n
+        n (int/str, 可选): 平分成n份。默认值为： 16.\n
+        dir (int, 可选): 方向(1/-1)。默认值为： 1.\n
+        time (int, 可选): 增减延时。默认值为： 0.\n
 
     Returns:
         int: 总延时
     """
-    global TIME
     tot = 0
     for [dx, dy] in Circle_FindPoint(A, B, n, dir):
-        # tot += MoveToCoord_AutoDelay(A[0] + dx, A[1] + dy, z, time)[0]
         tot += MoveToCoord_AutoDelay(dx, dy, z, time)[0]
-    TIME += tot
     return tot
 
 def LedAllOn(color="#ffffff"):
-    """飞机灯光变为
+    """====================\n
+    飞机灯光变为
 
-    Args:
-        color (str, optional): 颜色. Defaults to "#ffffff".
+    ====================\n
+    参数:
+        color (str, 可选): 颜色。默认值为： "#ffffff".\n
     """
     b = _block("LedAllOn")
     _field(b, "color", color)
 
 def WaypointRGB(x, y, z, color):
-    """直线移至，飞机灯光变为
+    """====================\n
+    直线移至，飞机灯光变为
 
-    Args:
-        x (int): 目标位置x
-        y (int): 目标位置y
-        z (int): 目标位置z
-        color (str): 颜色
+    ====================\n
+    参数:
+        x (int): 目标位置x\n
+        y (int): 目标位置y\n
+        z (int): 目标位置z\n
+        color (str): 颜色\n
     """
     MoveToCoord(x, y, z)
     LedAllOn(color)
 
 def LedAllOff():
-    """熄灭飞机灯光
+    """====================\n
+    熄灭飞机灯光
     """
     _block("LedAllOff")
 
 def LedBodyOn(color="#ffffff"):
-    """机身灯光变为
+    """====================\n
+    机身灯光变为
 
-    Args:
-        color (str, optional): 颜色. Defaults to "#ffffff".
+    ====================\n
+    参数:
+        color (str, 可选): 颜色。默认值为： "#ffffff".\n
     """
     b = _block("LedBodyOn")
     _field(b, "color", color)
 
 def LedAllBreath(color, delay = 1000, dur = 1000, bright = 1):
-    """飞机灯光呼吸
+    """====================\n
+    飞机灯光呼吸
 
-    Args:
+    ====================\n
+    参数:
         color (str): 颜色
-        delay (int, optional): 在delay毫秒内逐渐变色. Defaults to 1000.
-        dur (int, optional): 在dur毫秒内变暗. Defaults to 1000.
-        bright (int, optional): 亮度为bright(0~1). Defaults to 1.
+        delay (int, 可选): 在delay毫秒内逐渐变色。默认值为： 1000.\n
+        dur (int, 可选): 在dur毫秒内变暗。默认值为： 1000.\n
+        bright (int, 可选): 亮度为bright(0~1)。默认值为： 1.\n
     """
     b = _block("LedAllBreath")
     _field(b, "dur", dur)
@@ -410,13 +450,15 @@ def LedAllBreath(color, delay = 1000, dur = 1000, bright = 1):
     _field(b, "delay", delay)
 
 def LedBodyBreath(color, delay = 1000, dur = 1000, bright = 1):
-    """飞机机身灯光呼吸
+    """====================\n
+    飞机机身灯光呼吸
 
-    Args:
-        color (str): 颜色
-        delay (int, optional): 在delay毫秒内逐渐变色. Defaults to 1000.
-        dur (int, optional): 在dur毫秒内变暗. Defaults to 1000.
-        bright (int, optional): 亮度为bright(0~1). Defaults to 1.
+    ====================\n
+    参数:
+        color (str): 颜色\n
+        delay (int, 可选): 在delay毫秒内逐渐变色。默认值为： 1000.\n
+        dur (int, 可选): 在dur毫秒内变暗。默认值为： 1000.\n
+        bright (int, 可选): 亮度为bright(0~1)。默认值为： 1.\n
     """
     b = _block("LedBodyBreath")
     _field(b, "dur", dur)
@@ -425,13 +467,15 @@ def LedBodyBreath(color, delay = 1000, dur = 1000, bright = 1):
     _field(b, "delay", delay)
 
 def LedBodyBlink(color, dur, delay, bright):
-    """飞机机身灯光持续
+    """====================\n
+    飞机机身灯光持续
 
-    Args:
-        color (str): 颜色
-        dur (int): 持续dur毫秒
-        delay (int): delay毫秒后关闭
-        bright (int): 亮度为bright(0~1)
+    ====================\n
+    参数:
+        color (str): 颜色\n
+        dur (int): 持续dur毫秒\n
+        delay (int): delay毫秒后关闭\n
+        bright (int): 亮度为bright(0~1)\n
     """
     b = _block("LedBodyBlink")
     _field(b, "color", color)
@@ -440,15 +484,17 @@ def LedBodyBlink(color, dur, delay, bright):
     _field(b, "delay", delay)
 
 def LedDroneArmHorse(color1, color2, color3, color4, clock, delay):
-    """四个机臂灯光变为
+    """====================\n
+    四个机臂灯光变为
 
-    Args:
-        color1 (str): 颜色1
-        color2 (str): 颜色2
-        color3 (str): 颜色3
-        color4 (str): 颜色4
-        clock (bool): 顺/逆时针(True/False)
-        delay (int): 转一圈时间为delay毫秒
+    ====================\n
+    参数:
+        color1 (str): 颜色1\n
+        color2 (str): 颜色2\n
+        color3 (str): 颜色3\n
+        color4 (str): 颜色4\n
+        clock (bool): 顺/逆时针(True/False)\n
+        delay (int): 转一圈时间为delay毫秒\n
     """
     b = _block("LedDroneArmHorse")
     _field(b, "color1", color1)
@@ -459,14 +505,16 @@ def LedDroneArmHorse(color1, color2, color3, color4, clock, delay):
     _field(b, "delay", delay)
 
 def LedDroneArmPulse(color1, color2, color3, color4, frequency):
-    """四个机臂同亮脉冲
+    """====================\n
+    四个机臂同亮脉冲
 
-    Args:
-        color1 (str): 颜色1
-        color2 (str): 颜色2
-        color3 (str): 颜色3
-        color4 (str): 颜色4
-        frequency (int): 频率
+    ====================\n
+    参数:
+        color1 (str): 颜色1\n
+        color2 (str): 颜色2\n
+        color3 (str): 颜色3\n
+        color4 (str): 颜色4\n
+        frequency (int): 频率\n
     """
     b = _block("LedDroneArmPulse")
     _field(b, "color1", color1)
@@ -476,17 +524,21 @@ def LedDroneArmPulse(color1, color2, color3, color4, frequency):
     _field(b, "frequency", frequency)
 
 def finish():
-    """结束这架飞机
+    """====================\n
+    结束这架飞机
     """
-    global __DRONE_NUM
+    global DRONE_NUM, TIME
+    TIME = 0
+    Vprint("Finished! =========================")
+    DRONE_NUM += 1
     if not TEST:
         str_xml = str(ET.tostring(__XML, encoding='utf-8', method="xml"))
         __WEBXML.clear()
         __WEBXML.text = str_xml[2: (len(str_xml) - 1)]
-    __DRONE_NUM += 1
 
 def save():
-    """生成代码
+    """====================\n
+    生成代码
     """
     rough_str = ET.tostring(root, encoding='utf-8', xml_declaration=True)
     reparsed = minidom.parseString(rough_str)
@@ -494,12 +546,40 @@ def save():
     f = open('{}.vlfii'.format(FILE), 'w', encoding='utf-8')
     f.write(new_str)
     f.close()
+    print("\n\033[33mFile Saved!\033[37m")
+    print("""\033[32m
+
+███████╗██████╗  █████╗ ██╗   ██╗███████╗███████╗
+██╔════╝██╔══██╗██╔══██╗╚██╗ ██╔╝██╔════╝██╔════╝
+█████╗  ██████╔╝███████║ ╚████╔╝ █████╗  ███████╗
+██╔══╝  ██╔══██╗██╔══██║  ╚██╔╝  ██╔══╝  ╚════██║
+███████╗██║  ██║██║  ██║   ██║   ███████╗███████║
+╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚══════╝
+
+============  Made By EraYes With \033[31m❤\033[32m  ============\033[37m
+""")
+
 
 Move = MoveToCoord
 Takeoff = TakeOff
 Disarm = Lock
 Arm = UnLock
 Start = start
+
+音乐 = music
+开始 = start
+时间 = Time
+
+解锁 = UnLock
+上锁 = Lock
+延时 = Delay
+水平 = Horizontal
+垂直 = Vertical
+角速度 = AngularVelocity
+起飞 = TakeOff
+降落 = Land
+相对移动 = RelativePosition
+移至 = MoveToCoord
 
 #endregion all
 
