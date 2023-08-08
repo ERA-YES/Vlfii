@@ -1,5 +1,5 @@
 # Vlfii
-小鸟飞飞图形化编程的文本编程，针对于小鸟飞飞图形化编程群控软件，采用python构建，可直接引用为库运行，目前已实现大部分常用函数，正在更新中
+小鸟飞飞图形化编程的文本编程，针对于小鸟飞飞图形化编程群控软件，采用python构建，可直接引用为库运行，目前已实现大部分常用函数，快比赛了，大概会断更
 
 ### 在博客里体验效果更佳哦
 **[博客链接](https://blog.erayes.top/2023/07/18/vlfii/)**
@@ -73,9 +73,10 @@ save()
 |Move_Circle|x, y, z = 120, n = 8, r = 100, time = 0|飞圆心为传入坐标的n个点的半径为r的圆|int tot 总时间|
 |Move_CircleFind|A, B, z = 120, n = 16, dir = 1, time = 0|直接从B点开始飞圆心为A点的圆|int tot 总时间|
 |Circle|n, r, dir = 1|返回一个被n均分的圆|list c|
-|Circle_FindPoint|A, B, n, dir = 1|返回圆心A点，经过B点的圆|list p|
+|Circle_FindPoint|A, B, n, dir = 1|返回圆心A点，B点开始向dir方向的圆|list p|
 |music|name|设定代码的音乐，接受文件名|-|
-|Time|-|计算以返回当前时间|str "MM:SS"|
+|Time|output|计算以返回当前时间, output为True时输出当前时间|str "MM:SS"|
+|Vprint|s|以当前无人机发言|输出"{ip} saying: {s}"|-|
 
 **函数介绍较简单，更多请在代码里查看**
 
@@ -98,15 +99,24 @@ pip install pyperclip
 |__FATHER|私有值|-|表示父标签|
 |__WEB_XML|私有值|-|表示WebXml标签|
 |__XML|私有值|-|表示Xml标签|
-|__DRONE_NUM|私有值|-|当前代码框的无人机编号|
 |__hSpeed|私有值|-|记录当前无人机的水平速度|
 |__hAcc|私有值|-|记录当前无人机的水平加速度|
+|DRONE_NUM|列表|-|当前代码框的无人机编号|
 |TIME|公共|整型|记录当前时间|
 |FILE|公共|字符串|输出文件名|
 |POS|公共|列表|飞机当前坐标|
 |DRONE|公共|列表|无人机列表|
+|IP|公共|列表|无人机IP列表|
 |TEST|公共|布尔值|调试模式开关，开启时生成文件不可用|
-|blue|公共|"#33ccff"|蓝色|
-|yellow|公共|"#ffff00"|黄色|
-|orange|公共|"#ff6600"|橙色|
-|grey|公共|"#c0c0c0"|灰色|
+
+### 颜色变量
+|变量名|值|颜色|
+|blue|"#33ccff"|蓝色<div style="background-color: #33ccff; border: 1px solid white; border-radius: 4px; width: 12px; height: 12px; display: inline-block;"></div>|
+|yellow|"#ffff00"|黄色<div style="background-color: #ffff00; border: 1px solid white; border-radius: 4px; width: 12px; height: 12px; display: inline-block;"></div>|
+|orange|"#ff6600"|橙色<div style="background-color: #ff6600; border: 1px solid white; border-radius: 4px; width: 12px; height: 12px; display: inline-block;"></div>|
+|grey|"#c0c0c0"|灰色<div style="background-color: #c0c0c0; border: 1px solid white; border-radius: 4px; width: 12px; height: 12px; display: inline-block;"></div>|
+|red|"#ff0000"|红色<div style="background-color: #ff0000; border: 1px solid white; border-radius: 4px; width: 12px; height: 12px; display: inline-block;"></div>|
+|white_red|"#ffcccc"|浅红色<div style="background-color: #ffcccc; border: 1px solid white; border-radius: 4px; width: 12px; height: 12px; display: inline-block;"></div>|
+|green|"#33cc00"|绿色<div style="background-color: #33cc00; border: 1px solid white; border-radius: 4px; width: 12px; height: 12px; display: inline-block;"></div>|
+|white_yellow|"#ffffcc"|淡黄色<div style="background-color: #ffffcc; border: 1px solid white; border-radius: 4px; width: 12px; height: 12px; display: inline-block;"></div>|
+|white|"#ffffff"|白色<div style="background-color: #ffffff; border: 1px solid white; border-radius: 4px; width: 12px; height: 12px; display: inline-block;"></div>|
